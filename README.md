@@ -1,5 +1,27 @@
 # Istio Proxy
 
+***This is a fork of `istio-proxy` that provides `grpc-web` compatibility through downgrading `HTTP/2` to `HTTP/1.1`.***
+
+## Build Instruction
+
+```bash
+$ git clone https://github.com/riiid/proxy --single-branch --branch v1.5.1-grpc-web --recursive
+$ cd envoy && git apply ../envoy.patch && cd ..
+$ docker run -it --detach --name=builder --entrypoint=/bin/bash \
+  envoyproxy/envoy-build-ubuntu:f21773ab398a879f976936f72c78c9dd3718ca1e
+$ docker cp envoy builder:/envoy
+$ docker cp . builder:/proxy
+$ docker exec -it builder /bin/bash -c 'cd /proxy && bazel build --config=release //src/envoy:envoy'
+$ docker cp builder:/proxy/bazel-bin/src/envoy/envoy ./envoy-custom
+$ cat > Dockerfile << EOF
+FROM istio/proxyv2:1.5.1
+COPY envoy-custom /usr/local/bin/envoy
+EOF
+$ docker build . -t "istio-proxy:1.5.1-custom" && rm -f Dockerfile
+```
+
+---
+
 The Istio Proxy is a microservice proxy that can be used on the client and server side, and forms a microservice mesh. The Proxy supports a large number of features.
 
 Client Side Features:

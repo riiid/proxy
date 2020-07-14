@@ -40,20 +40,11 @@ bind(
 # envoy-wasm commit date: Mar 20 2020
 ENVOY_PROJECT = "istio"
 
-ENVOY_REPO = "envoy"
-
-ENVOY_SHA = "ab0b214dab308bfe4a78ffea8d15907690cb23de"
-
-ENVOY_SHA256 = "2b64c61010353889fbccfd50f80e952a6234733e8c8057d2c2ed125da4606232"
-
-# To override with local envoy, just pass `--override_repository=envoy=/PATH/TO/ENVOY` to Bazel or
-# persist the option in `user.bazelrc`.
-http_archive(
+local_repository(
     name = "envoy",
-    sha256 = ENVOY_SHA256,
-    strip_prefix = ENVOY_REPO + "-" + ENVOY_SHA,
-    url = "https://github.com/" + ENVOY_PROJECT + "/" + ENVOY_REPO + "/archive/" + ENVOY_SHA + ".tar.gz",
+    path = "/envoy"
 )
+
 
 load("@envoy//bazel:api_binding.bzl", "envoy_api_binding")
 

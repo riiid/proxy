@@ -1,0 +1,28 @@
+diff --git a/api/wasm/cpp/proxy_wasm_common.h b/api/wasm/cpp/proxy_wasm_common.h
+index 2f77f628ea..f980e2f97e 100644
+--- a/api/wasm/cpp/proxy_wasm_common.h
++++ b/api/wasm/cpp/proxy_wasm_common.h
+@@ -51,6 +51,7 @@ inline std::string toString(WasmResult r) {
+     _CASE(InternalFailure);
+     _CASE(BrokenConnection);
+   }
++  return "";
+ }
+ #undef _CASE
+ 
+diff --git a/source/extensions/transport_sockets/tls/context_config_impl.cc b/source/extensions/transport_sockets/tls/context_config_impl.cc
+index 36bbb867c3..f8bae9e77c 100644
+--- a/source/extensions/transport_sockets/tls/context_config_impl.cc
++++ b/source/extensions/transport_sockets/tls/context_config_impl.cc
+@@ -154,7 +154,10 @@ ContextConfigImpl::ContextConfigImpl(
+     const std::string& default_cipher_suites, const std::string& default_curves,
+     Server::Configuration::TransportSocketFactoryContext& factory_context)
+     : api_(factory_context.api()),
+-      alpn_protocols_(RepeatedPtrUtil::join(config.alpn_protocols(), ",")),
++      alpn_protocols_(
++          RepeatedPtrUtil::join(config.alpn_protocols(), ",") == "h2,http/1.1" ? "http/1.1,h2" :
++          RepeatedPtrUtil::join(config.alpn_protocols(), ",")
++      ),
+       cipher_suites_(StringUtil::nonEmptyStringOrDefault(
+           RepeatedPtrUtil::join(config.tls_params().cipher_suites(), ":"), default_cipher_suites)),
+       ecdh_curves_(StringUtil::nonEmptyStringOrDefault(
